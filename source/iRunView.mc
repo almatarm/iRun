@@ -30,7 +30,12 @@ class iRunView extends WatchUi.DataField {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
         dc.clear();
         
-//        doHrBackground(dc, fields.hrN);
+        //Cadence
+        drawBackground(dc, fields.cadenceZoneColor, 00, 72, 66, 61);
+        textC(dc, 30, 107, Graphics.FONT_NUMBER_MEDIUM, fields.cadence);
+        textC(dc, 30, 79, Graphics.FONT_XTINY,  "CAD");
+                
+        //HR
 		drawBackground(dc, fields.hrZoneColor, 66, 72, 87, 61);
         textC(dc, 112, 107, Graphics.FONT_NUMBER_MEDIUM, 
         	fields.counter % 3 == 0 ? fields.hr : fields.hrZone);

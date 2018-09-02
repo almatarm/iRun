@@ -10,8 +10,14 @@ class InfoFields {
 	var hrN;
 	var hrZoneColor;
 	
+	var cadence;
+    var cadenceN;
+    var cadenceZoneColor;
+    
+	
 	
 	var userZones;
+	var cadenceZones = [144, 153, 164, 174, 183, 200];
 
 	function initialize() {
 		var profile = UserProfile.getProfile();
@@ -27,10 +33,15 @@ class InfoFields {
 	
 	function compute(info) {
 		counter++;
+		
 		hr = toStr(info.currentHeartRate);
 		hrN = info.currentHeartRate;
         hrZoneColor = zoneColor(hrN, userZones);
         hrZone = zoneNumber(hrN, userZones).format("%.1f");
+        
+        cadence = toStr(info.currentCadence);
+        cadenceN = info.currentCadence;
+        cadenceZoneColor = zoneColor(cadenceN, cadenceZones);
 	}
 	
 	function zoneColor(value, zones) {
