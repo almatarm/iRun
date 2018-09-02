@@ -41,6 +41,7 @@ class iRunView extends WatchUi.DataField {
         	fields.counter % 3 == 0 ? fields.hr : fields.hrZone);
         textC(dc, 112, 79,  Graphics.FONT_XTINY,  	     "HR");
         
+        drawBattery(dc);
         drawLayout(dc);
         return true;
 	}
@@ -79,5 +80,29 @@ class iRunView extends WatchUi.DataField {
             dc.drawText(x, y, font, s, Graphics.TEXT_JUSTIFY_RIGHT|Graphics.TEXT_JUSTIFY_VCENTER);
         }
     }
+    
+    function drawBattery(dc) {
+        var pct = System.getSystemStats().battery;
+        dc.drawRectangle(120, 202, 18, 11);
+        dc.fillRectangle(138, 205, 2, 5);
+
+        var color = Graphics.COLOR_GREEN;
+        if (pct < 25) {
+            color = Graphics.COLOR_RED;
+        } else if (pct < 40) {
+            color = Graphics.COLOR_YELLOW;
+        }
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+
+        var width = (pct * 16.0 / 100 + 0.5).toLong();
+        if (width > 0) {
+            //Sys.println("" + pct + "=" + width);
+            if (width > 16) {
+                width = 16;
+            }
+            dc.fillRectangle(121, 203, width, 9);
+        }
+    }
+    
 
 }
