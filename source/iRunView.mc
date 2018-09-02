@@ -32,7 +32,8 @@ class iRunView extends WatchUi.DataField {
         
 //        doHrBackground(dc, fields.hrN);
 		drawBackground(dc, fields.hrZoneColor, 66, 72, 87, 61);
-        textC(dc, 112, 107, Graphics.FONT_NUMBER_MEDIUM, fields.hr);
+        textC(dc, 112, 107, Graphics.FONT_NUMBER_MEDIUM, 
+        	fields.counter % 3 == 0 ? fields.hr : fields.hrZone);
         textC(dc, 112, 79,  Graphics.FONT_XTINY,  	     "HR");
         
         drawLayout(dc);
