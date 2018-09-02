@@ -30,7 +30,8 @@ class iRunView extends WatchUi.DataField {
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_WHITE);
         dc.clear();
         
-        doHrBackground(dc, fields.hrN);
+//        doHrBackground(dc, fields.hrN);
+		drawBackground(dc, fields.hrZoneColor, 66, 72, 87, 61);
         textC(dc, 112, 107, Graphics.FONT_NUMBER_MEDIUM, fields.hr);
         textC(dc, 112, 79,  Graphics.FONT_XTINY,  	     "HR");
         
@@ -38,31 +39,13 @@ class iRunView extends WatchUi.DataField {
         return true;
 	}
 	
-	function doHrBackground(dc, hr) {
-        if (hr == null) {
-            return;
-        }
-
-        var color;
-        if (hr >= 186) {
-            color = Graphics.COLOR_PURPLE;
-        } else if (hr > 177) {
-            color = Graphics.COLOR_RED;
-        } else if (hr > 140) {
-            color = Graphics.COLOR_ORANGE;
-        } else if (hr > 135) {
-            color = Graphics.COLOR_YELLOW;
-        } else if (hr > 116) {
-            color = Graphics.COLOR_GREEN;
-        } else {
-            color = Graphics.COLOR_BLUE;
-        }
-
-        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-        dc.fillRectangle(66, 72, 87, 61);
+	function drawBackground(dc, color, x, y, w, h) {
+		if (color == null) { return; }
+		dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.fillRectangle(x, y, w, h);
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-    }
-	
+	}
+		
    	// The given info object contains all the current workout information.
     // Calculate a value and save it locally in this method.
     // Note that compute() and onUpdate() are asynchronous, and there is no

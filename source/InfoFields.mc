@@ -5,14 +5,38 @@ class InfoFields {
 
 	var hr;
 	var hrN;
-        
+	var hrZoneColor;
+	
+	var userZones;
+
 	function initialize() {
+		var profile = UserProfile.getProfile();
+        var sport = UserProfile.getCurrentSport();
+        userZones = UserProfile.getHeartRateZones(sport);
+        
+//        for(var i = 0; i < 5; i++) {
+//        	System.println("Zone " + (i+1) + ":  " + userZones[i] + " - " + userZones[i+1]);
+//        }
 	}
 	
 	function compute(info) {
 		hr = toStr(info.currentHeartRate);
 		hrN = info.currentHeartRate;
-        
+        hrZoneColor = zoneColor(hrN, userZones);
+	}
+	
+	function zoneColor(value, zones) {
+		if(value > zones[4]) {
+    		return Graphics.COLOR_PURPLE;	//Zone 5
+    	} else if(value > zones[3]) {
+    		return Graphics.COLOR_BLUE;		//Zone 4
+    	} else if(value > zones[2]) {
+    		return Graphics.COLOR_GREEN;	//Zone 3
+    	} else if(value > zones[1]) {
+    		return Graphics.COLOR_ORANGE;	//Zone 2
+    	} else if(value > zones[0]) {
+    		return Graphics.COLOR_RED;		//Zone 1
+    	}
 	}
 	
 	function toPace(speed) {
