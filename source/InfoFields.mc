@@ -2,6 +2,10 @@ using Toybox.Time as Time;
 using Toybox.System as Sys;
 
 class InfoFields {
+	
+	// last 60 seconds - 'current speed' samples
+    hidden var lastSecs = new [60];
+    hidden var curPos;
 
 	var counter;
 	
@@ -14,8 +18,14 @@ class InfoFields {
     var cadenceN;
     var cadenceZoneColor;
     
+	var distance;
 	
-	
+	var timer;
+    var timerSecs;
+    var pace10s;
+    var paceAvg;
+    var time;
+    
 	var userZones;
 	var cadenceZones = [144, 153, 164, 174, 183, 200];
 
@@ -26,6 +36,11 @@ class InfoFields {
         
         counter = 0;
         
+        for (var i = 0; i < lastSecs.size(); ++i) {
+            lastSecs[i] = 0.0;
+        }
+        curPos = 0;
+        
 //        for(var i = 0; i < 5; i++) {
 //        	System.println("Zone " + (i+1) + ":  " + userZones[i] + " - " + userZones[i+1]);
 //        }
@@ -34,6 +49,31 @@ class InfoFields {
 	function compute(info) {
 		counter++;
 		
+       if (info.currentSpeed != null && info.currentSpeed > 0) {
+            var idx = curPos % lastSecs.size();
+            curPos++;
+            lastSecs[idx] = info.currentSpeed;
+        }
+
+        var avg10s = getNAvg(lastSecs, curPos, 10);
+        var elapsed = info.elapsedTime;
+        var elapsedSecs = null;
+
+        if (elapsed != null) {
+            elapsed /= 1000;
+
+            if (elapsed >= 3600) {
+                elapsedSecs = (elapsed.toLong() % 60).format("%02d");
+            }
+        }
+
+        timer = fmtSecs(elapsed);
+        timerSecs = elapsedSecs;
+        pace10s =  fmtSecs(toPace(avg10s));
+        paceAvg = fmtSecs(toPace(info.averageSpeed));
+        time = fmtTime(Sys.getClockTime());        
+        		
+        		
 		hr = toStr(info.currentHeartRate);
 		hrN = info.currentHeartRate;
         hrZoneColor = zoneColor(hrN, userZones);
@@ -42,7 +82,9 @@ class InfoFields {
         cadence = toStr(info.currentCadence);
         cadenceN = info.currentCadence;
         cadenceZoneColor = zoneColor(cadenceN, cadenceZones);
-	}
+        
+        distance = toDistance(info.elapsedDistance);
+    }
 	
 	function zoneColor(value, zones) {
 		if(value > zones[4]) {
@@ -99,7 +141,7 @@ class InfoFields {
         } else {
             dist = d / 1609.0;
         }
-        return dist.format("%.2f", dist);
+        return dist.format("%.2f");
     }
     
     function toStr(o) {
@@ -141,5 +183,43 @@ class InfoFields {
         }
         return "" + h + ":" + clock.min.format("%02d");
     }
+    
+        function getAverage(a) {
+        var count = 0;
+        var sum = 0.0;
+        for (var i = 0; i < a.size(); ++i) {
+            if (a[i] > 0.0) {
+                count++;
+                sum += a[i];
+            }
+        }
+        if (count > 0) {
+            return sum / count;
+        } else {
+            return null;
+        }
+    }
+
+    function getNAvg(a, curIdx, n) {
+        var start = curIdx - n;
+        if (start < 0) {
+            start += a.size();
+        }
+        var count = 0;
+        var sum = 0.0;
+        for (var i = start; i < (start + n); ++i) {
+            var idx = i % a.size();
+            if (a[idx] > 0.0) {
+                count++;
+                sum += a[idx];
+            }
+        }
+        if (count > 0) {
+            return sum / count;
+        } else {
+            return null;
+        }
+    }
+    
        
 }
