@@ -48,6 +48,10 @@ class iRunView extends WatchUi.DataField {
         textR(dc, 105, 186, Graphics.FONT_XTINY, 
     		System.getDeviceSettings().distanceUnits == System.UNIT_METRIC? "km" : "mi");
         
+        //Calories
+		textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.calories);
+        textL(dc, 55, 18, Graphics.FONT_XTINY,  "CAL");
+        
 		//Timer
 		textL(dc, 112, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.timer);
         if (fields.timerSecs != null) {
