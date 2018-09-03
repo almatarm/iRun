@@ -22,8 +22,10 @@ class InfoFields {
 	
 	var timer;
     var timerSecs;
+    
     var pace10s;
     var paceAvg;
+    
     var time;
     
 	var userZones;
@@ -31,8 +33,8 @@ class InfoFields {
 
 	function initialize() {
 		var profile = UserProfile.getProfile();
-        var sport = UserProfile.getCurrentSport();
-        userZones = UserProfile.getHeartRateZones(sport);
+        var sport 	= UserProfile.getCurrentSport();
+        userZones   = UserProfile.getHeartRateZones(sport);
         
         counter = 0;
         
@@ -49,16 +51,19 @@ class InfoFields {
 	function compute(info) {
 		counter++;
 		
-       if (info.currentSpeed != null && info.currentSpeed > 0) {
-            var idx = curPos % lastSecs.size();
+		//Pace
+       	if (info.currentSpeed != null && info.currentSpeed > 0) {
+        	var idx = curPos % lastSecs.size();
             curPos++;
             lastSecs[idx] = info.currentSpeed;
-        }
-
-        var avg10s = getNAvg(lastSecs, curPos, 10);
+       	}
+		var avg10s = getNAvg(lastSecs, curPos, 10);
+        pace10s =  fmtSecs(toPace(avg10s));
+        paceAvg = fmtSecs(toPace(info.averageSpeed));
+        
+        //Timer
         var elapsed = info.elapsedTime;
         var elapsedSecs = null;
-
         if (elapsed != null) {
             elapsed /= 1000;
 
@@ -69,20 +74,22 @@ class InfoFields {
 
         timer = fmtSecs(elapsed);
         timerSecs = elapsedSecs;
-        pace10s =  fmtSecs(toPace(avg10s));
-        paceAvg = fmtSecs(toPace(info.averageSpeed));
+
+		//Time
         time = fmtTime(Sys.getClockTime());        
         		
-        		
+        //HR	
 		hr = toStr(info.currentHeartRate);
 		hrN = info.currentHeartRate;
         hrZoneColor = zoneColor(hrN, userZones);
         hrZone = zoneNumber(hrN, userZones).format("%.1f");
         
+        //Cadence
         cadence = toStr(info.currentCadence);
         cadenceN = info.currentCadence;
         cadenceZoneColor = zoneColor(cadenceN, cadenceZones);
         
+        //Distance
         distance = toDistance(info.elapsedDistance);
     }
 	

@@ -32,19 +32,20 @@ class iRunView extends WatchUi.DataField {
         dc.clear();
         
         //Cadence
-        drawBackground(dc, fields.cadenceZoneColor, 00, 72, 72, 61);
-        textC(dc, 30, 107, Graphics.FONT_NUMBER_MEDIUM, fields.cadence);
-        textC(dc, 30, 79, Graphics.FONT_XTINY,  "CAD");
+        drawBackground(dc, fields.cadenceZoneColor, 00, 73, 72, 60);
+        textC(dc, 36, 107, Graphics.FONT_NUMBER_MEDIUM, fields.cadence);
+        textC(dc, 36, 79, Graphics.FONT_XTINY,  "CAD");
                 
         //HR
-		drawBackground(dc, fields.hrZoneColor, 72, 72, 75, 61);
-        textC(dc, 112, 107, Graphics.FONT_NUMBER_MEDIUM, 
+		drawBackground(dc, fields.hrZoneColor, 145, 73, 72, 60);
+        textC(dc, 180, 107, Graphics.FONT_NUMBER_MEDIUM, 
         	fields.counter % 3 == 0 ? fields.hr : fields.hrZone);
-        textC(dc, 112, 79,  Graphics.FONT_XTINY,  	     "HR");
+        textC(dc, 180, 79,  Graphics.FONT_XTINY,  	     "HR");
         
         //Distance 
         textC(dc, 66, 154, Graphics.FONT_NUMBER_MEDIUM, fields.distance);
-        textL(dc, 54, 186, Graphics.FONT_XTINY, "DIST");
+        textR(dc, 105, 186, Graphics.FONT_XTINY, 
+    		System.getDeviceSettings().distanceUnits == System.UNIT_METRIC? "km" : "mi");
         
 		//Timer
 		textL(dc, 112, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.timer);
@@ -54,14 +55,16 @@ class iRunView extends WatchUi.DataField {
         }
         textL(dc, 120, 18, Graphics.FONT_XTINY,  "TIMER");
         
-        textC(dc, 180, 107, Graphics.FONT_NUMBER_MEDIUM, fields.pace10s);
-        textC(dc, 180, 79, Graphics.FONT_XTINY,  "PACE");
+        //Pace
+        textC(dc, 109, 107, Graphics.FONT_NUMBER_MEDIUM, fields.pace10s);
+        textC(dc, 109,  79, Graphics.FONT_XTINY,  		 "PACE");
 		
+		//Average Pace
 		textC(dc, 150, 154, Graphics.FONT_NUMBER_MEDIUM, fields.paceAvg);
         textL(dc, 124, 186, Graphics.FONT_XTINY, "A PACE");
 
-        textL(dc, 75, 206, Graphics.FONT_TINY, fields.time);
-        
+		//Time
+        textL(dc, 75, 206, Graphics.FONT_TINY, fields.time);        
 
         drawBattery(dc);
         drawLayout(dc);
