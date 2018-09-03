@@ -16,13 +16,14 @@ class iRunView extends WatchUi.DataField {
 	function drawLayout(dc) {
 		dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_WHITE);
         // horizontal lines
-        dc.drawLine(0, 71, 218, 71);
+        dc.drawLine(0,  72, 218,  72);
         dc.drawLine(0, 132, 218, 132);
         dc.drawLine(0, 198, 218, 198);
+        
         // vertical lines
-        dc.drawLine(109, 0, 109, 71);
-        dc.drawLine(71, 71, 71, 132);
-        dc.drawLine(147, 71, 147, 132);
+        dc.drawLine(109,  0,  109,  72);
+        dc.drawLine( 72,  72,  72, 132);
+        dc.drawLine(144,  72, 144, 132);
         dc.drawLine(109, 132, 109, 198);    
     }
 
@@ -31,7 +32,7 @@ class iRunView extends WatchUi.DataField {
         dc.clear();
         
         //Cadence
-        drawBackground(dc, fields.cadenceZoneColor, 00, 72, 71, 61);
+        drawBackground(dc, fields.cadenceZoneColor, 00, 72, 72, 61);
         textC(dc, 30, 107, Graphics.FONT_NUMBER_MEDIUM, fields.cadence);
         textC(dc, 30, 79, Graphics.FONT_XTINY,  "CAD");
                 
