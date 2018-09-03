@@ -87,6 +87,10 @@ class InfoFields {
     }
 	
 	function zoneColor(value, zones) {
+		if(value == null) {
+			return Graphics.COLOR_TRANSPARENT;
+		}
+		
 		if(value > zones[4]) {
     		return Graphics.COLOR_PURPLE;	//Zone 5
     	} else if(value > zones[3]) {
@@ -101,6 +105,7 @@ class InfoFields {
 	}
 	
     function zoneNumber(value, zones) {
+    	if(value == null) { return 0; }
     	var subValue = 0;
     	if(value > zones[5]) {
     		return 6;
