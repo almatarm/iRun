@@ -1,4 +1,5 @@
 using Toybox.WatchUi;
+using Toybox.Attention as Attn;
 
 class iRunView extends WatchUi.DataField {
 	hidden var fields;
@@ -68,6 +69,11 @@ class iRunView extends WatchUi.DataField {
 
         drawBattery(dc);
         drawLayout(dc);
+
+		if(fields.alertLabel != null) {
+			alert(dc, fields.alertLabel, fields.alertValue);
+		}  
+		
         return true;
 	}
 	
@@ -77,7 +83,31 @@ class iRunView extends WatchUi.DataField {
         dc.fillRectangle(x, y, w, h);
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 	}
+	
+	function drawBackgroundCircle(dc, color, x, y, r) {
+		if (color == null) { return; }
+		dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+		dc.fillCircle(x, y, r);
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+	}
 		
+	function alert(dc, label, value) {
+		if (Attention has :backlight) {
+ 		   Attention.backlight(true);
+		}
+		
+		if (Attention has :playTone) {
+		   Attention.playTone(Attention.TONE_LOUD_BEEP);
+		}
+		
+		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 97);
+		drawBackgroundCircle(dc, Graphics.COLOR_BLUE,    109, 109, 93);
+		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 92);
+		drawBackgroundCircle(dc, Graphics.COLOR_WHITE,   109, 109, 90);
+		textC(dc, 109, 120, Graphics.FONT_NUMBER_THAI_HOT, value);
+        textC(dc, 109,  65, Graphics.FONT_TINY,  	  	   label);
+	}
+	
    	// The given info object contains all the current workout information.
     // Calculate a value and save it locally in this method.
     // Note that compute() and onUpdate() are asynchronous, and there is no

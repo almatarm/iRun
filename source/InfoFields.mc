@@ -28,15 +28,30 @@ class InfoFields {
     
     var time;
     
+    var calories;
+    
+    
+    var alertLabel;
+    var alertValue;
+    
+    var calAlert  = null;
+    var distAlert = null;
+    
+    var alertTime;
+	var alertType;
+	var calAlertFreq  = 50;
+	var distAlertFreq = 1000; // meter 
+	
 	var userZones;
 	var cadenceZones = [144, 153, 164, 174, 183, 200];
-
+	
 	function initialize() {
 		var profile = UserProfile.getProfile();
         var sport 	= UserProfile.getCurrentSport();
         userZones   = UserProfile.getHeartRateZones(sport);
         
         counter = 0;
+        alertTime = 0;
         
         for (var i = 0; i < lastSecs.size(); ++i) {
             lastSecs[i] = 0.0;
@@ -50,6 +65,14 @@ class InfoFields {
 	
 	function compute(info) {
 		counter++;
+		if(counter - alertTime > 3) {
+			alertLabel = null;
+			if(alertType == 1) {
+				calAlert = null;
+			} else if (alertType == 2) {
+				distAlert = null;
+			}
+		}
 		
 		//Pace
        	if (info.currentSpeed != null && info.currentSpeed > 0) {
@@ -90,8 +113,34 @@ class InfoFields {
         cadenceZoneColor = zoneColor(cadenceN, cadenceZones);
         
         //Distance
-        distance = toDistance(info.elapsedDistance);
-    }
+        distance = toDistanceStr(info.elapsedDistance);
+        
+        //Calories
+        calories = info.calories;
+        
+        //Alerts
+        if(calories != null && calories != 0 
+        	&& calories % calAlertFreq == 0 
+        	&& counter - alertTime > 10) {  	
+        	calAlert = calories;
+        	alertTime = counter;
+        } else if(info.elapsedDistance != null && info.elapsedDistance > 10
+        	&& info.elapsedDistance.toNumber() % distAlertFreq < 6 
+        	&& counter - alertTime > 10) {
+        	distAlert = distance;
+        	alertTime = counter;
+    	}
+    	
+    	if(calAlert != null) {
+    		alertLabel = "CALORIES";
+    		alertValue = calAlert;
+    		alertType  = 1; 
+    	} else if(distAlert != null) {
+    		alertLabel = "DISTANCE";
+    		alertValue = distAlert;
+    		alertType  = 2;
+    	}
+	}
 	
 	function zoneColor(value, zones) {
 		if(value == null) {
@@ -109,6 +158,8 @@ class InfoFields {
     	} else if(value > zones[0]) {
     		return Graphics.COLOR_BLUE;		//Zone 1
     	}
+    	
+    	return Graphics.COLOR_TRANSPARENT;
 	}
 	
     function zoneNumber(value, zones) {
@@ -143,16 +194,20 @@ class InfoFields {
     }
     
     function toDistance(d) {
-        if (d == null) {
-            return "0.00";
-        }
-
         var dist;
         if (Sys.getDeviceSettings().distanceUnits == Sys.UNIT_METRIC) {
             dist = d / 1000.0;
         } else {
             dist = d / 1609.0;
         }
+        return dist;        
+    }
+    
+    function toDistanceStr(d) {
+        if (d == null) {
+            return "0.00";
+        }
+        var dist = toDistance(d);
         return dist.format("%.2f");
     }
     
@@ -196,7 +251,7 @@ class InfoFields {
         return "" + h + ":" + clock.min.format("%02d");
     }
     
-        function getAverage(a) {
+    function getAverage(a) {
         var count = 0;
         var sum = 0.0;
         for (var i = 0; i < a.size(); ++i) {
