@@ -151,8 +151,8 @@ class InfoFields {
     }
     
     var workout = 
-    	"#T15%Warm Up#T30&HZ3%Run#T20%Rest#T15%Cool Down#";
-//    	"#D10%Hello#";
+//    	"#T15%Warm Up#T30&HZ3%Run#T20%Rest#T15%Cool Down#";
+    	"#T10%Hello#";
     
 	//var inWorkout = false;
     var inWktStep = false;
@@ -194,6 +194,7 @@ class InfoFields {
     		System.println("curWktStep!" + curWktStep + "!" );
     		if(curWktStep.length() == 1) {
     			wktMsg = "Workout Ended!";
+    			wktMsgPostTime = info.elapsedTime;
     			return;
     		} 
     		wktMsg = curWktStep.substring(curWktStep.find("%") + 1, curWktStep.length());
