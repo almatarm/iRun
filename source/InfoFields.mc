@@ -176,7 +176,7 @@ class InfoFields {
     			
     			//Duration	
     			if(cond.substring(0,1).equals("D")) {
-    				System.println("Duration");
+    				var timeInSec = cond.substring(1, cond.length()).toNumber();
     			}
     			
     			//Heart Rate
