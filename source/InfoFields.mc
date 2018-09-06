@@ -45,6 +45,8 @@ class InfoFields {
 	var userZones;
 	var cadenceZones = [144, 153, 164, 174, 183, 200];
 	
+	  var mPreviousTimer;
+	  
 	function initialize() {
 		var profile = UserProfile.getProfile();
         var sport 	= UserProfile.getCurrentSport();
@@ -64,6 +66,8 @@ class InfoFields {
 	}
 	
 	function compute(info) {
+		var status = getActivityStatus(info);
+		
 		counter++;
 		if(counter - alertTime > 3) {
 			alertLabel = null;
@@ -140,7 +144,7 @@ class InfoFields {
     		alertValue = distAlert;
     		alertType  = 2;
     	}
-	}
+    }
 	
 	function zoneColor(value, zones) {
 		if(value == null) {
@@ -287,6 +291,19 @@ class InfoFields {
             return null;
         }
     }
+    
+    // -1: Did not start
+    //  0: pause
+    //  1: Running
+    function getActivityStatus(info) {
+        var currentTimer = info.timerTime;
+        var status = ( currentTimer == null || currentTimer == 0) ? -1 : 
+        	mPreviousTimer == null ? 1 : 
+        	mPreviousTimer != currentTimer? 1 :
+        	0;  
+        mPreviousTimer = currentTimer;
+        return status;    	
+    } 
     
        
 }

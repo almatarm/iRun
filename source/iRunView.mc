@@ -3,6 +3,7 @@ using Toybox.Attention as Attn;
 
 class iRunView extends WatchUi.DataField {
 	hidden var fields;
+	var workout = "#D30&Z3#D30#";
 	
 	function initialize() {
 	  	DataField.initialize();
