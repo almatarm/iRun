@@ -6,6 +6,7 @@ class InfoFields {
 	// last 60 seconds - 'current speed' samples
     hidden var lastSecs = new [60];
     hidden var curPos;
+    hidden var mPreviousTimer;
 
 	var counter;
 	
@@ -44,8 +45,6 @@ class InfoFields {
 	
 	var userZones;
 	var cadenceZones = [144, 153, 164, 174, 183, 200];
-	
-	  var mPreviousTimer;
 	  
 	function initialize() {
 		var profile = UserProfile.getProfile();
@@ -67,6 +66,7 @@ class InfoFields {
 	
 	function compute(info) {
 		var status = getActivityStatus(info);
+		if (status == 0) { return; } //Activity paused
 		
 		counter++;
 		if(counter - alertTime > 3) {
@@ -143,6 +143,49 @@ class InfoFields {
     		alertLabel = "DISTANCE";
     		alertValue = distAlert;
     		alertType  = 2;
+    	}
+    	
+    	if(workout != null) {
+    		processWorkout(info, status);
+    	}
+    }
+    
+    var workout = "#D30&HZ3#D20#D15#";
+	//var inWorkout = false;
+    var inWktStep = false;
+    var wktPtr = 0;
+    
+    function processWorkout(info, status) {
+    	if(status != 1) { 
+    		return; // Return if not running
+    	}
+    	
+    	var curWktStep = null;
+    	if(!inWktStep) {
+    		var nextStepPtr = workout.substring(wktPtr + 1, workout.length()).find("#");
+    		nextStepPtr = nextStepPtr == null ? workout.length() : nextStepPtr + wktPtr + 1;
+    		curWktStep = workout.substring(wktPtr, nextStepPtr);
+    		wktPtr = nextStepPtr;		
+    	}
+    	
+    	if( curWktStep != null && curWktStep.length() > 0) {
+    		while(curWktStep.length() != 0) {
+    			curWktStep = curWktStep.substring(1, curWktStep.length());
+    			var cond = curWktStep.substring(0, curWktStep.find("&") == null ?
+    				curWktStep.length() : curWktStep.find("&"));
+    			
+    			//Duration	
+    			if(cond.substring(0,1).equals("D")) {
+    				System.println("Duration");
+    			}
+    			
+    			//Heart Rate
+    			if(cond.substring(0,1).equals("H")) {
+    				System.println("Heart Rate");
+    			}
+    			
+    			curWktStep = curWktStep.substring(cond.length(), curWktStep.length());
+    		}	
     	}
     }
 	

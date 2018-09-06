@@ -3,7 +3,6 @@ using Toybox.Attention as Attn;
 
 class iRunView extends WatchUi.DataField {
 	hidden var fields;
-	var workout = "#D30&Z3#D30#";
 	
 	function initialize() {
 	  	DataField.initialize();
@@ -105,8 +104,8 @@ class iRunView extends WatchUi.DataField {
 		   Attention.playTone(Attention.TONE_LOUD_BEEP);
 		}
 		
-		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 97);
-		drawBackgroundCircle(dc, Graphics.COLOR_BLUE,    109, 109, 93);
+		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 109);
+		drawBackgroundCircle(dc, Graphics.COLOR_BLUE,    109, 109, 107);
 		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 92);
 		drawBackgroundCircle(dc, Graphics.COLOR_WHITE,   109, 109, 90);
 		textC(dc, 109, 120, Graphics.FONT_NUMBER_THAI_HOT, value);
