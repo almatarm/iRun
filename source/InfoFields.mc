@@ -89,7 +89,7 @@ class InfoFields {
         paceAvg = fmtSecs(toPace(info.averageSpeed));
         
         //Timer
-        var elapsed = info.elapsedTime;
+        var elapsed = info.timerTime;
         var elapsedSecs = null;
         if (elapsed != null) {
             elapsed /= 1000;
