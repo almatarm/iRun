@@ -151,8 +151,8 @@ class InfoFields {
     }
     
     var workout = 
-//    	"#T15%Warm Up#T30&HZ3%Run#T20%Rest#T15%Cool Down#";
-    	"#T10%Hello#";
+    	"#T15%Warm Up#T30&HZ3%Run#T20%Rest#T15%Cool Down#";
+//    	"#T120&HZ1%Hello#";
     
 	//var inWorkout = false;
     var inWktStep = false;
@@ -162,7 +162,8 @@ class InfoFields {
     var wktDurationN = null;
     var wktMsg = null;
     var wktMsgPostTime = null;
-    
+    var wktMinHR = null;
+    var wktMaxHR = null;
     function processWorkout(info, status) {
     	if(status != 1) { 
     		return; // Return if not running
@@ -178,8 +179,22 @@ class InfoFields {
     		if(wktDurationN == 0) {
     			wktDurationN = null;
     			wktDuration  = null;
+    			wktMinHR = null;
+    			wktMaxHR = null;
     			inWktStep = false;
     		}
+    	}
+    	
+    	if(wktMinHR != null && info.currentHeartRate < wktMinHR
+    		&& info.elapsedTime - wktMsgPostTime > 20000) {
+    		wktMsg = "Below HR\n" + ( wktMinHR - info.currentHeartRate ).format("%d");
+    		wktMsgPostTime = info.elapsedTime;
+    	}
+    	
+    	if(wktMaxHR != null && info.currentHeartRate > wktMaxHR 
+    		&& info.elapsedTime - wktMsgPostTime > 20000) {
+    		wktMsg = "Above HR\n" + ( wktMinHR - info.currentHeartRate ).format("%d");
+    		wktMsgPostTime = info.elapsedTime;
     	}
     	
     	var curWktStep = null;
@@ -213,7 +228,13 @@ class InfoFields {
     			
     			//Heart Rate
     			if(cond.substring(0,1).equals("H")) {
-    				System.println("Heart Rate");
+    				if(cond.substring(1,2).equals("Z")) { //Zoned Heart Rate
+    					var zone = cond.substring(2,3).toNumber();
+    					wktMinHR = userZones[zone -1];
+    					wktMaxHR = userZones[zone];
+    					System.println("HR " + wktMinHR.format("%d") + " - " +  wktMaxHR.format("%d"));
+    					wktMsg += "\n Zone " + zone.format("%d");
+    				}
     			}
     			
     			curWktStep = curWktStep.substring(cond.length(), curWktStep.length());

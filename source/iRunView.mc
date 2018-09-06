@@ -86,6 +86,7 @@ class iRunView extends WatchUi.DataField {
 		if(fields.wktMsg != null) {
 			workoutMessage(dc, fields.wktMsg);
 		}
+		
         return true;
 	}
 	
@@ -108,7 +109,7 @@ class iRunView extends WatchUi.DataField {
  		   Attention.backlight(true);
 		}
 		
-		if (Attention has :playTone) {
+		if (Attention has :playTone && System.getTimer() %4 == 0 ) {
 		   Attention.playTone(Attention.TONE_LOUD_BEEP);
 		}
 		
@@ -125,7 +126,8 @@ class iRunView extends WatchUi.DataField {
  		   Attention.backlight(true);
 		}
 		
-		if (Attention has :playTone) {
+		if (Attention has :playTone && System.getTimer() %3 == 0) {
+			
 		   Attention.playTone(Attention.TONE_LOUD_BEEP);
 		}
 		
