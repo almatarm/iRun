@@ -150,14 +150,36 @@ class InfoFields {
     	}
     }
     
-    var workout = "#D30&HZ3#D20#D15#";
+    var workout = 
+    	"#T15%Warm Up#T30&HZ3%Run#T20%Rest#T15%Cool Down#";
+//    	"#D10%Hello#";
+    
 	//var inWorkout = false;
     var inWktStep = false;
     var wktPtr = 0;
     
+    var wktDuration = null;
+    var wktDurationN = null;
+    var wktMsg = null;
+    var wktMsgPostTime = null;
+    
     function processWorkout(info, status) {
     	if(status != 1) { 
     		return; // Return if not running
+    	}
+    	
+    	if(wktMsgPostTime != null && info.elapsedTime - wktMsgPostTime > 3000) {
+    		wktMsg = null;
+    	}
+    	
+    	if(wktDurationN != null) {
+    		wktDurationN--;
+    		wktDuration = fmtSecs(wktDurationN);
+    		if(wktDurationN == 0) {
+    			wktDurationN = null;
+    			wktDuration  = null;
+    			inWktStep = false;
+    		}
     	}
     	
     	var curWktStep = null;
@@ -169,14 +191,23 @@ class InfoFields {
     	}
     	
     	if( curWktStep != null && curWktStep.length() > 0) {
+    		System.println("curWktStep!" + curWktStep + "!" );
+    		if(curWktStep.length() == 1) {
+    			wktMsg = "Workout Ended!";
+    			return;
+    		} 
+    		wktMsg = curWktStep.substring(curWktStep.find("%") + 1, curWktStep.length());
+    		curWktStep = curWktStep.substring(0, curWktStep.find("%"));
     		while(curWktStep.length() != 0) {
     			curWktStep = curWktStep.substring(1, curWktStep.length());
     			var cond = curWktStep.substring(0, curWktStep.find("&") == null ?
     				curWktStep.length() : curWktStep.find("&"));
     			
     			//Duration	
-    			if(cond.substring(0,1).equals("D")) {
-    				var timeInSec = cond.substring(1, cond.length()).toNumber();
+    			if(cond.substring(0,1).equals("T")) {
+    				wktDurationN = cond.substring(1, cond.length()).toNumber();
+    				wktMsg += "\n" + fmtSecs(wktDurationN);
+    				inWktStep = true;
     			}
     			
     			//Heart Rate
@@ -186,6 +217,7 @@ class InfoFields {
     			
     			curWktStep = curWktStep.substring(cond.length(), curWktStep.length());
     		}	
+    		wktMsgPostTime = info.elapsedTime;
     	}
     }
 	

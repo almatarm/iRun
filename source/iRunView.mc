@@ -49,8 +49,13 @@ class iRunView extends WatchUi.DataField {
     		System.getDeviceSettings().distanceUnits == System.UNIT_METRIC? "km" : "mi");
         
         //Calories
-		textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.calories);
-        textL(dc, 55, 18, Graphics.FONT_XTINY,  "CAL");
+        if(fields.wktDuration == null) {
+			textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.calories);
+	        textL(dc, 55, 18, Graphics.FONT_XTINY,  "CAL");
+        } else {
+        	textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.wktDuration);
+	        textL(dc, 55, 18, Graphics.FONT_XTINY,  "I TIM");
+        } 
         
 		//Timer
 		textL(dc, 112, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.timer);
@@ -78,6 +83,9 @@ class iRunView extends WatchUi.DataField {
 			alert(dc, fields.alertLabel, fields.alertValue);
 		}  
 		
+		if(fields.wktMsg != null) {
+			workoutMessage(dc, fields.wktMsg);
+		}
         return true;
 	}
 	
@@ -110,6 +118,22 @@ class iRunView extends WatchUi.DataField {
 		drawBackgroundCircle(dc, Graphics.COLOR_WHITE,   109, 109, 90);
 		textC(dc, 109, 120, Graphics.FONT_NUMBER_THAI_HOT, value);
         textC(dc, 109,  65, Graphics.FONT_TINY,  	  	   label);
+	}
+	
+	function workoutMessage(dc, message) {
+		if (Attention has :backlight) {
+ 		   Attention.backlight(true);
+		}
+		
+		if (Attention has :playTone) {
+		   Attention.playTone(Attention.TONE_LOUD_BEEP);
+		}
+		
+		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 109);
+		drawBackgroundCircle(dc, Graphics.COLOR_BLUE,    109, 109, 107);
+		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 92);
+		drawBackgroundCircle(dc, Graphics.COLOR_WHITE,   109, 109, 90);
+		textC(dc, 109, 120, Graphics.FONT_MEDIUM, message);
 	}
 	
    	// The given info object contains all the current workout information.
