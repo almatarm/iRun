@@ -85,6 +85,10 @@ class iRunView extends WatchUi.DataField {
 		
 		if(fields.wktMsg != null) {
 			workoutMessage(dc, fields.wktMsg);
+			if(fields.wktRepeat != null) {
+				textC(dc, 109,  45, Graphics.FONT_TINY, 
+					"Repeat " + fields.wktCurrentRepeat.format("%d") + "/" + fields.wktRepeat.format("%d"));
+			}
 		}
 		
         return true;
@@ -137,6 +141,8 @@ class iRunView extends WatchUi.DataField {
 		drawBackgroundCircle(dc, Graphics.COLOR_WHITE,   109, 109, 90);
 		textC(dc, 109, 120, Graphics.FONT_MEDIUM, message);
 	}
+	
+	
 	
    	// The given info object contains all the current workout information.
     // Calculate a value and save it locally in this method.

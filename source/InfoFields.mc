@@ -151,8 +151,9 @@ class InfoFields {
     }
     
     var workout = 
-    	"#T15%Warm Up#T30&HZ3%Run#T20%Rest#T15%Cool Down#";
+//    	"#T10%Warm Up#T9&HZ3#T5%Rest#T5%Cool Down#";
 //    	"#T120&HZ1%Hello#";
+		"#T07%Startup#R3#T05%Run#T05%Rest#E#T10%Cool Down#";
     
 	//var inWorkout = false;
     var inWktStep = false;
@@ -164,6 +165,9 @@ class InfoFields {
     var wktMsgPostTime = null;
     var wktMinHR = null;
     var wktMaxHR = null;
+    var wktRepeat = null;
+    var wktCurrentRepeat = null;
+    var wktRepeatStartPtr = null;
     function processWorkout(info, status) {
     	if(status != 1) { 
     		return; // Return if not running
@@ -206,14 +210,17 @@ class InfoFields {
     	}
     	
     	if( curWktStep != null && curWktStep.length() > 0) {
-    		System.println("curWktStep!" + curWktStep + "!" );
     		if(curWktStep.length() == 1) {
     			wktMsg = "Workout Ended!";
     			wktMsgPostTime = info.elapsedTime;
     			return;
     		} 
-    		wktMsg = curWktStep.substring(curWktStep.find("%") + 1, curWktStep.length());
-    		curWktStep = curWktStep.substring(0, curWktStep.find("%"));
+    		
+    		wktMsg = curWktStep.find("%") != null ? curWktStep.substring(curWktStep.find("%") + 1, curWktStep.length()) : "";
+//    		wktMsg = curWktStep.substring(curWktStep.find("%") + 1, curWktStep.length());
+    		
+    		curWktStep = curWktStep.find("%") != null ? curWktStep.substring(0, curWktStep.find("%")) : curWktStep;
+    		
     		while(curWktStep.length() != 0) {
     			curWktStep = curWktStep.substring(1, curWktStep.length());
     			var cond = curWktStep.substring(0, curWktStep.find("&") == null ?
@@ -232,9 +239,27 @@ class InfoFields {
     					var zone = cond.substring(2,3).toNumber();
     					wktMinHR = userZones[zone -1];
     					wktMaxHR = userZones[zone];
-    					System.println("HR " + wktMinHR.format("%d") + " - " +  wktMaxHR.format("%d"));
     					wktMsg += "\n Zone " + zone.format("%d");
     				}
+    				inWktStep = true;
+    			}
+    			
+    			if(cond.substring(0,1).equals("R")) {
+    				wktRepeat = cond.substring(1,cond.length()).toNumber();
+    				wktCurrentRepeat = 1;
+    				wktRepeatStartPtr = wktPtr;
+    				wktMsg = null;    				
+    				inWktStep = false;
+    			}
+    			
+    			if(cond.substring(0,1).equals("E")) {
+    				if(wktCurrentRepeat != wktRepeat) {
+    					wktCurrentRepeat++;
+    					wktPtr = wktRepeatStartPtr;
+    				} else {
+    					wktRepeat = null;
+    				}
+    				inWktStep = false;
     			}
     			
     			curWktStep = curWktStep.substring(cond.length(), curWktStep.length());
