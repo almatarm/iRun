@@ -18,5 +18,11 @@ class iRunApp extends Application.AppBase {
     function getInitialView() {
         return [ new iRunView() ];
     }
+    
+    // For this app all that needs to be done is trigger a WatchUi refresh
+    // since the settings are only used in onUpdate().
+    function onSettingsChanged() {
+        WatchUi.requestUpdate();
+    }
 
 }

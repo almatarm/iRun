@@ -46,6 +46,29 @@ class InfoFields {
 	var userZones;
 	var cadenceZones = [144, 153, 164, 174, 183, 200];
 	  
+	  
+	var workout = null;
+//    	"#F720#T600&HZ4%Warm up#R5%Repeat 5 Times#T120&HZ4%Run#T60&HZ2%Rest#T60&HZ4%Run#T90&HZ2%Rest#E#%Cool down"; 
+//    	"#T10%Warm Up#T9&HZ3#T5%Rest#T5%Cool Down#";
+//    	"#T120&HZ1%Hello#";
+//		"#T07%Startup#R3#T05%Run#T05%Rest#E#T10%Cool Down#";
+    
+	var inWktStep = false;
+    var wktPtr = 0;
+    
+    var wktDuration = null;
+    var wktDurationN = null;
+    var wktMsg = null;
+    var wktMsgColor = Graphics.COLOR_TRANSPARENT;
+    var wktMsgPostTime = null;
+    var wktMinHR = null;
+    var wktMaxHR = null;
+    var wktRepeat = null;
+    var wktCurrentRepeat = null;
+    var wktRepeatStartPtr = null;
+    var wktFullTime = null;
+    var wktEndTime = null;
+	  
 	function initialize() {
 		var profile = UserProfile.getProfile();
         var sport 	= UserProfile.getCurrentSport();
@@ -58,6 +81,8 @@ class InfoFields {
             lastSecs[i] = 0.0;
         }
         curPos = 0;
+        
+        workout = Application.getApp().getProperty("workout");
         
 //        for(var i = 0; i < 5; i++) {
 //        	System.println("Zone " + (i+1) + ":  " + userZones[i] + " - " + userZones[i+1]);
@@ -103,7 +128,8 @@ class InfoFields {
         timerSecs = elapsedSecs;
 
 		//Time
-        time = fmtTime(Sys.getClockTime());        
+        time = fmtTime(Sys.getClockTime());
+        wktEndTime = fmtTime(Sys.getClockTime());
         		
         //HR	
 		hr = toStr(info.currentHeartRate);
@@ -145,39 +171,26 @@ class InfoFields {
     		alertType  = 2;
     	}
     	
-    	if(workout != null) {
+    	if(workout != null && workout.length() > 0) {
     		processWorkout(info, status);
     	}
     }
     
-    var workout = 
-//    	"#T10%Warm Up#T9&HZ3#T5%Rest#T5%Cool Down#";
-//    	"#T120&HZ1%Hello#";
-		"#T07%Startup#R3#T05%Run#T05%Rest#E#T10%Cool Down#";
-    
-	//var inWorkout = false;
-    var inWktStep = false;
-    var wktPtr = 0;
-    
-    var wktDuration = null;
-    var wktDurationN = null;
-    var wktMsg = null;
-    var wktMsgPostTime = null;
-    var wktMinHR = null;
-    var wktMaxHR = null;
-    var wktRepeat = null;
-    var wktCurrentRepeat = null;
-    var wktRepeatStartPtr = null;
     function processWorkout(info, status) {
     	if(status != 1) { 
     		return; // Return if not running
     	}
+    	
+//    	if(wktFullTime == null) {
+//    		wktFullTime = computeWorkoutFullTime();
+//    	}
     	
     	if(wktMsgPostTime != null && info.elapsedTime - wktMsgPostTime > 3000) {
     		wktMsg = null;
     	}
     	
     	if(wktDurationN != null) {
+    		if(wktFullTime != null) { wktFullTime--;}
     		wktDurationN--;
     		wktDuration = fmtSecs(wktDurationN);
     		if(wktDurationN == 0) {
@@ -191,13 +204,15 @@ class InfoFields {
     	
     	if(wktMinHR != null && info.currentHeartRate < wktMinHR
     		&& info.elapsedTime - wktMsgPostTime > 20000) {
-    		wktMsg = "Below HR\n" + ( wktMinHR - info.currentHeartRate ).format("%d");
+    		wktMsg = "Below HR\n+" + ( wktMinHR - info.currentHeartRate ).format("%d");
+    		wktMsgColor = Graphics.COLOR_YELLOW;
     		wktMsgPostTime = info.elapsedTime;
     	}
     	
     	if(wktMaxHR != null && info.currentHeartRate > wktMaxHR 
     		&& info.elapsedTime - wktMsgPostTime > 20000) {
-    		wktMsg = "Above HR\n" + ( wktMinHR - info.currentHeartRate ).format("%d");
+    		wktMsg = "Above HR\n" + (info.currentHeartRate - wktMinHR ).format("%d");
+    		wktMsgColor = Graphics.COLOR_YELLOW;
     		wktMsgPostTime = info.elapsedTime;
     	}
     	
@@ -212,6 +227,7 @@ class InfoFields {
     	if( curWktStep != null && curWktStep.length() > 0) {
     		if(curWktStep.length() == 1) {
     			wktMsg = "Workout Ended!";
+    			wktMsgColor = Graphics.COLOR_GREEN;
     			wktMsgPostTime = info.elapsedTime;
     			return;
     		} 
@@ -225,6 +241,13 @@ class InfoFields {
     			curWktStep = curWktStep.substring(1, curWktStep.length());
     			var cond = curWktStep.substring(0, curWktStep.find("&") == null ?
     				curWktStep.length() : curWktStep.find("&"));
+    			
+    			
+    			//FullTime
+    			if(cond.substring(0,1).equals("F")) {
+    				wktFullTime = cond.substring(1, cond.length()).toNumber();
+    				inWktStep = false;
+    			}
     			
     			//Duration	
     			if(cond.substring(0,1).equals("T")) {
@@ -262,11 +285,56 @@ class InfoFields {
     				inWktStep = false;
     			}
     			
-    			curWktStep = curWktStep.substring(cond.length(), curWktStep.length());
+    			curWktStep  = curWktStep.substring(cond.length(), curWktStep.length());
+    			wktMsgColor = Graphics.COLOR_DK_GRAY;
     		}	
     		wktMsgPostTime = info.elapsedTime;
     	}
     }
+    
+//    function computeWorkoutFullTime() {
+//    	var fullTime = 0;
+//    	var wktPtr = 0;
+//    	var repeatFactor = null;
+//    	var repeatTime = 0;
+//    	var curWktStep = null;
+//    	var nextStepPtr = null;
+//    	
+//    	do {
+//    		nextStepPtr = workout.substring(wktPtr + 1, workout.length()).find("#");
+//    		nextStepPtr = nextStepPtr == null ? workout.length() : nextStepPtr + wktPtr + 1;
+//    		curWktStep = workout.substring(wktPtr, nextStepPtr);
+//    		wktPtr = nextStepPtr;
+//    		
+//    		curWktStep = curWktStep.find("%") != null ? curWktStep.substring(0, curWktStep.find("%")) : curWktStep;
+//    		
+//    		while(curWktStep.length() != 0) {
+//    			curWktStep = curWktStep.substring(1, curWktStep.length());
+//    			var cond = curWktStep.substring(0, curWktStep.find("&") == null ?
+//    				curWktStep.length() : curWktStep.find("&"));
+//    			
+//    			//Duration	
+//    			if(cond.substring(0,1).equals("T")) {
+//    				if(repeatFactor == null) {
+//    					fullTime += cond.substring(1, cond.length()).toNumber();
+//    				} else {
+//						repeatTime += cond.substring(1, cond.length()).toNumber();
+//    				}
+//    			}
+//    			
+//    			if(cond.substring(0,1).equals("R")) {
+//    				repeatFactor = cond.substring(1,cond.length()).toNumber();
+//    				repeatTime = 0;
+//    			}
+//    			
+//    			if(cond.substring(0,1).equals("E")) {
+//    				fullTime += repeatFactor * repeatTime;
+//    				repeatFactor = null;
+//    			}    			
+//    		}	
+//    	} while (wktPtr < workout.length() );
+//    	return fullTime;
+//    }
 	
 	function zoneColor(value, zones) {
 		if(value == null) {

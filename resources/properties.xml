@@ -1,0 +1,16 @@
+<resources>
+
+    <properties>
+        <property id="workout" type="string">Workout</property>
+    </properties>
+
+    <strings>
+       <string id="workout_title">Workout</string>
+    </strings>
+
+    <settings>
+        <setting propertyKey="@Properties.workout" title="@Strings.workout_title">
+            <settingConfig type="alphaNumeric" />
+        </setting>
+    </settings>
+</resources>

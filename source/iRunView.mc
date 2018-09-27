@@ -53,8 +53,14 @@ class iRunView extends WatchUi.DataField {
 			textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.calories);
 	        textL(dc, 55, 18, Graphics.FONT_XTINY,  "CAL");
         } else {
-        	textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.wktDuration);
-	        textL(dc, 55, 18, Graphics.FONT_XTINY,  "I TIM");
+        	if(fields.counter % 3 == 0 && fields.wktFullTime != null) {
+		        textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  InfoFields.fmtSecs(fields.wktFullTime));
+		        textL(dc, 55, 18, Graphics.FONT_XTINY,  "F TIM");
+		        
+	        } else {
+		        textL(dc, 36, 45, Graphics.FONT_NUMBER_MEDIUM,  fields.wktDuration);
+		        textL(dc, 55, 18, Graphics.FONT_XTINY,  "I TIM");
+	        }
         } 
         
 		//Timer
@@ -84,7 +90,7 @@ class iRunView extends WatchUi.DataField {
 		}  
 		
 		if(fields.wktMsg != null) {
-			workoutMessage(dc, fields.wktMsg);
+			workoutMessage(dc, fields.wktMsg, fields.wktMsgColor);
 			if(fields.wktRepeat != null) {
 				textC(dc, 109,  45, Graphics.FONT_TINY, 
 					"Repeat " + fields.wktCurrentRepeat.format("%d") + "/" + fields.wktRepeat.format("%d"));
@@ -125,7 +131,7 @@ class iRunView extends WatchUi.DataField {
         textC(dc, 109,  65, Graphics.FONT_TINY,  	  	   label);
 	}
 	
-	function workoutMessage(dc, message) {
+	function workoutMessage(dc, message, borderColor) {
 		if (Attention has :backlight) {
  		   Attention.backlight(true);
 		}
@@ -136,7 +142,7 @@ class iRunView extends WatchUi.DataField {
 		}
 		
 		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 109);
-		drawBackgroundCircle(dc, Graphics.COLOR_BLUE,    109, 109, 107);
+		drawBackgroundCircle(dc, borderColor,   		 109, 109, 107);
 		drawBackgroundCircle(dc, Graphics.COLOR_DK_GRAY, 109, 109, 92);
 		drawBackgroundCircle(dc, Graphics.COLOR_WHITE,   109, 109, 90);
 		textC(dc, 109, 120, Graphics.FONT_MEDIUM, message);
